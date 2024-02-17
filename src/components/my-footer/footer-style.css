@@ -1,0 +1,36 @@
+.footer-logos-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.left{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.logo{
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.social-logo{
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2rem;
+}
+.footerNavItem {
+    margin-right: 5rem;
+}
+
+@media screen and (aspect-ratio < 1.2) {
+    .footerNavItem {
+        margin-right: 1rem;
+    }
+}

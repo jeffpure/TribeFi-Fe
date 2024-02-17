@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/src/assets/logo/logo.svg" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta http-equiv="expires" content="0">
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Tribe - Here, you can trade anything and everything with selected tribes to your advantage. Whether you are a nomad, a rockerboy, a netrunner, or a corpo, you can find what you need on the TribeFi. More than just a trading platform, it’s a way of unleashing the value of your tribe and your skills. You can join forces with other tribes, form alliances and rivalries, and compete for the best deals and the most reputation." />
+    <title>TribeFi</title>
+    <style>
+      .loader {
+        position: fixed;
+        background-color: #242939;
+        height: 100vh;
+        width: 100vw;
+        top: 0;
+        left: 0;
+      }
+      .loader .logo {
+        height: 60px;
+        width: 60px;
+        border-radius: 50%;
+        background-color: #0C0C0C;
+        position: relative;
+        /* text-shadow: 0 1px 1px rgba(#fff, 0.6);
+     */
+        backdrop-filter: dropShadow(0 1px 1px rgba(255, 255, 255, 0.6));
+      }
+      .loader .logo::after,
+      .loader .logo::before {
+        position: absolute;
+        display: inline-block;
+        content: "";
+      }
+      .loader .logo:after {
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        border-radius: inherit;
+        z-index: 2;
+        background-image: linear-gradient(0deg, #fcfcfc, #94a0d9);
+      }
+      .loader .logo::before {
+        /* border: 4px solid transparent;
+     top: -4px;
+     left: -4px;
+     */
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        z-index: 1;
+        top: -2px;
+        left: -1px;
+        height: calc(100% + 2px);
+        width: calc(100% + 2px);
+      }
+      .loader .logo svg {
+        z-index: 3;
+      }
+      .logo,
+      .loader {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+    </style>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+      <div class="loader">
+        <div class="logo">
+
+          <svg width="22" height="23" viewBox="0 0 22 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0.949951H9.77778V7.7944L6.6 4.61662L3.66667 7.54995L6.84444 10.7277H0V0.949951ZM6.84445 13.1722L8.06667 11.95L6.84444 10.7277H9.77778V7.7944L11 9.01662L12.2222 7.79441V10.7277H15.1556L13.9333 11.95L15.1556 13.1722H12.2222V16.1055L11 14.8833L9.77778 16.1055V13.1722H6.84445ZM6.84445 13.1722L3.66667 16.35L6.6 19.2833L9.77778 16.1055V22.95H0V13.1722H6.84445ZM12.2222 16.1055V22.95H22V13.1722H15.1556L18.3333 16.35L15.4 19.2833L12.2222 16.1055ZM15.1556 10.7277H22V0.949951H12.2222V7.79441L15.4 4.61663L18.3333 7.54996L15.1556 10.7277Z" fill="#0D4CF5"/>
+          </svg>
+
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+
+  </body>
+</html>

@@ -1,0 +1,23 @@
+.topBox {
+
+    width: 100%;
+
+    right: 0;
+    bottom: 0;
+    width: 100%; 
+    height: max-content;
+    background: url('/src/assets/img/LeaderboardTopBg.png');
+    background-repeat:repeat;
+    background-position: 100% 100%;
+    background-size: 90rem 17.3125rem;
+    padding: 1.5rem 2.5rem;
+}
+.nameIcon {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+    border-radius: 1.5rem;
+    background: #C4C4C4;
+}
+@media screen and (aspect-ratio < 1.2) {
+}

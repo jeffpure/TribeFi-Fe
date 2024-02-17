@@ -1,0 +1,16 @@
+.topBox {
+
+    width: 100%;
+    display: flex;
+    padding: 5vw 0;
+
+}
+.nameIcon {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+    border-radius: 1.5rem;
+    background: #C4C4C4;
+}
+@media screen and (aspect-ratio < 1.2) {
+}

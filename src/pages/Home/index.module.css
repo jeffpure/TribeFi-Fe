@@ -1,0 +1,204 @@
+.topBox {
+    height: 42.4375rem;
+    width: 100%;
+ 
+    display: flex;
+    right: 0;
+    border: 1px solid #8A8A8A;
+    position: relative;
+    overflow: hidden;
+}
+.topBoxBg {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 30.875rem;
+    height: 40.875rem;
+    background: url('/src/assets/img/home_bg.png');
+    background-repeat: no-repeat;
+    background-position: 100% 100%;
+    background-size:30.875rem 40.875rem;
+    /*mix-blend-mode: hard-light;*/
+}
+.topLined {
+    max-width: 41.80944rem;
+    margin-left: 3rem;
+}
+.topIntroduce {
+    font-family: "Space Mono";
+    font-size: 0.625rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    width: 27.5rem;
+    position: absolute;
+    bottom: 2rem;
+    left: 3rem;
+}
+.topDeckTime {
+    position: absolute;
+    top: 50%;
+    left: -1.4rem;
+    transform: rotate(-0.25turn);
+    font-family: "Roboto Mono";
+    font-size: 0.9375rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+.topsDeckBlock {
+    width: 0.4375rem;
+    height: 1.5rem;
+    position: absolute;
+    bottom: 5.9rem;
+    left: 1.2rem;
+    background: #0D4CF5;
+}
+.topsDeckLogin {
+    position: absolute;
+    top: 1.4rem;
+    left: 3rem;
+}
+
+.topsDeckLoginText {
+    font-family: "Space Mono";
+    font-size: 0.625rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+.FeatureBg {
+
+    position: absolute;
+    left: 3rem;
+    top: 5rem;
+    width: 26.875rem;
+    height: 26.875rem;
+    background: url('/src/assets/img/home_FEATURE_bg.svg');
+    background-repeat: no-repeat;
+    background-size: 26.875rem 26.875rem;
+    z-index: 1;
+}
+.FeatureBox {
+    padding: 1.5rem 3.69rem 1.5rem 4.87rem; 
+    width: 100%;
+    position: relative;
+}
+.FeatureItem {
+    padding: 2rem 1.5rem;
+    width: 51rem;
+    height: 16.625rem;
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #000;
+
+    background: #fff;
+    z-index: 2;
+    position: relative;
+}
+.FeatureIcon {
+    display: block;
+    
+}
+.FeatureHoverIcon {
+    display: none;
+
+}
+.FeatureItem:hover .FeatureIcon {
+    display: none;
+}
+.FeatureItem:hover  .FeatureHoverIcon {
+    display: block;
+    
+}
+.firstScreenTitle {
+    color: #1E1E1E;
+    font-family: "Space Mono";
+    font-size: 4.25rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 130%; /* 5.525rem */
+    letter-spacing: -0.2125rem;
+    width: 42.6875rem;
+}
+.EnterAppBtn {
+    position: relative;
+    width: 18.04756rem;
+    height: 5.13713rem;
+    border: 0;
+    background-color: transparent;
+}
+.EnterAppBtn span {
+    position: absolute;
+    z-index: 2;
+}
+.EnterAppBtn svg {
+    position: absolute;
+    z-index: 1;
+    width: 23.04756rem;
+    height: 5.13713rem;
+    flex-shrink: 0;
+    fill: rgba(17, 16, 16, 0.88);
+    stroke-width: 1.03px;
+    stroke: #39ADD2;
+    filter: drop-shadow(0px 0px 4.944px #3DA19C);
+}
+.EnterAppBtn:hover svg {
+    filter: drop-shadow(0px 0px 0px #5ac0bb);
+}
+.FeaturesBox {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 1rem;
+}
+.FeaturesItem {
+    background: #FAFAFA;
+    height: 9.375rem;
+    width: 100%;
+}
+.FeaturesItemIcon {
+    border: 1px solid #0D4CF5;
+}
+.FeaturesItemBorder {
+    border-top: 1px solid #8A8A8A;
+    border-right: 1px solid #8A8A8A;
+    border-bottom: 1px solid #8A8A8A;
+}
+.FeaturesItem:hover .FeaturesItemBorder {
+    border-top: 3px solid #0D4CF5;
+    border-right: 3px solid #0D4CF5;
+    border-bottom: 3px solid #0D4CF5;
+}
+.FeaturesItem:hover .FeaturesItemIcon {
+    border: 1px solid #0D4CF5;
+}
+.FeaturesItem:hover .FeaturesItemText {
+    color: #0D4CF5;
+}
+@media screen and (aspect-ratio < 1.2) {
+    .firstScreenTitle {
+        text-shadow: 1px 5px 0px #888888;
+    }
+    .FeaturesItem {
+        width: 100%;
+        align-items: center;
+    }
+    .FeatureBg {
+        height: auto;
+    }
+    .FeaturesItem {
+        background: #FAFAFA;
+        height: 9.375rem;
+        width: 100%;
+    }
+    .FeatureBox {
+        padding: 1.5rem 2.5rem;
+
+    }
+    .FeatureItem {
+        width: 100%;
+    }
+    .FeaturesBox {
+        grid-template-columns: auto;
+    }
+
+}
