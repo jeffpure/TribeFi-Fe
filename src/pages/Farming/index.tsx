@@ -18,12 +18,14 @@ const { Text } = Typography;
 
 const Earn = () => {
   const navigate = useNavigate();
+  const searchParams = new URLSearchParams(window.location.search);
 
   const { openConnectModal } = useConnectModal();
   const { address: userAddress, isConnected } = useAccount();
   const signer = useEthersSigner();
 
-  const PoolContract = new ethers.Contract(Constants.Contracts.Pool, PoolAbi, signer);
+  // @ts-ignore
+  const PoolContract = new ethers.Contract(searchParams.get("address"), PoolAbi, signer);
 
   // 分页按钮
   const [pagin, setPagin] = useState(0);
