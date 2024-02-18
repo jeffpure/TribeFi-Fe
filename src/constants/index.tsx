@@ -1,7 +1,7 @@
 export default {
   Contracts: {
     Pool: '',
-    PoolFactory: '0x5E4bB2aC0f7fa9Df55F9f5a66736a184ef314a87',
-    Slot: '0x41038C488a901EaF58b06e1fe043d0C469B190EB',
+    PoolFactory: '0x482D7a251b4D1373C9188E16086162211Ed3ab12',
+    Slot: '0x26134053609638f88CDc34129c0f548dbb27da45',
   },
 };

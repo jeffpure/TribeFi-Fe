@@ -39,12 +39,12 @@ export const blast = {
 export function MyWeb3Provider({ children }: any) {
   const { theme } = useSelector(state => state.global);
   const { chains, publicClient, webSocketPublicClient } = configureChains(
-    [sepolia],
+    [blast],
     [
       jsonRpcProvider({
         rpc: chain => ({
-          // http: `https://sepolia.blast.io/`,
-          http: `https://ethereum-sepolia.publicnode.com`,
+           http: `https://sepolia.blast.io/`,
+          // http: `https://ethereum-sepolia.publicnode.com`,
         }),
       }),
     ],
