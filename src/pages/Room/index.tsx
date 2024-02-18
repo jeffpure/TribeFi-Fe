@@ -1,7 +1,12 @@
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { Button, Flex, Image, Input, message, Modal, Typography } from 'antd';
+import { ethers } from 'ethers';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAccount } from 'wagmi';
 
+import PoolAbi from '@/abi/pool_abi.json';
+import SlotAbi from '@/abi/slot_abi.json';
 import arrowExplorer from '@/assets/img/arrowExplorer2.svg';
 import chatAvatarA from '@/assets/img/chatAvatarA.png';
 import chatAvatarB from '@/assets/img/chatAvatarB.png';
@@ -9,23 +14,27 @@ import chatEmojiIcon from '@/assets/img/chatEmojiIcon.svg';
 import chatSendIcon from '@/assets/img/chatSendIcon.svg';
 import farmingAvatarA from '@/assets/img/farmingAvatarA.png';
 import farmingAvatarB from '@/assets/img/farmingAvatarB.png';
+import Constants from '@/constants';
+import { useEthersSigner } from '@/web3/ethers';
 
 import indexStyle from './index.module.css';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { useAccount } from 'wagmi';
-import { useEthersSigner } from '@/web3/ethers';
-import { ethers } from 'ethers';
-import Constants from '@/constants';
-import SlotAbi from '@/abi/slot_abi.json';
 
 const { Text } = Typography;
 
 const Earn = () => {
   const navigate = useNavigate();
 
+  const searchParams = new URLSearchParams(window.location.search);
   const { openConnectModal } = useConnectModal();
   const { address: userAddress, isConnected } = useAccount();
   const signer = useEthersSigner();
+
+  let PoolContract: any = null;
+
+  if (searchParams.get('address')) {
+    // @ts-ignore
+    PoolContract = new ethers.Contract(searchParams.get('address'), PoolAbi, signer);
+  }
 
   const SlotContract = new ethers.Contract(Constants.Contracts.PoolFactory, SlotAbi, signer);
 
@@ -900,7 +909,11 @@ const Earn = () => {
               justify={'space-between'}
               align={'center'}
             >
-              <Button onClick={handleBuyCancel} className="confirmSubBtn font1p1" style={{ width: '100%', marginLeft: 0 }}>
+              <Button
+                onClick={handleBuyCancel}
+                className="confirmSubBtn font1p1"
+                style={{ width: '100%', marginLeft: 0 }}
+              >
                 DISCARD
               </Button>
               <Button
@@ -1013,7 +1026,12 @@ const Earn = () => {
               >
                 DISCARD
               </Button>
-              <Button onClick={handleSellOk} loading={sellLoading} className="warnSolidBtn font1p1 colorW" style={{ width: '100%', marginLeft: 0 }}>
+              <Button
+                onClick={handleSellOk}
+                loading={sellLoading}
+                className="warnSolidBtn font1p1 colorW"
+                style={{ width: '100%', marginLeft: 0 }}
+              >
                 SELL
               </Button>
             </Flex>

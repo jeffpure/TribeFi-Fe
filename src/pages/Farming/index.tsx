@@ -19,13 +19,16 @@ const { Text } = Typography;
 const Earn = () => {
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(window.location.search);
-
   const { openConnectModal } = useConnectModal();
   const { address: userAddress, isConnected } = useAccount();
   const signer = useEthersSigner();
 
-  // @ts-ignore
-  const PoolContract = new ethers.Contract(searchParams.get("address"), PoolAbi, signer);
+  let PoolContract: any = null;
+
+  if (searchParams.get('address')) {
+    // @ts-ignore
+    PoolContract = new ethers.Contract(searchParams.get('address'), PoolAbi, signer);
+  }
 
   // 分页按钮
   const [pagin, setPagin] = useState(0);
@@ -82,7 +85,13 @@ const Earn = () => {
   const [stakeLoading, setStakeLoading] = useState(false);
   const [stakeOpen, setStakeOpen] = useState(false);
 
-  const stakeShowModal = (item: { name: any; TVL?: string; AverageAPY?: string; MyAPY?: string; MyStaked?: string; }) => {
+  const stakeShowModal = (item: {
+    name: any;
+    TVL?: string;
+    AverageAPY?: string;
+    MyAPY?: string;
+    MyStaked?: string;
+  }) => {
     /*
     item:
         AverageAPY
@@ -146,7 +155,13 @@ const Earn = () => {
   const [unstakeLoading, setUnStakeLoading] = useState(false);
   const [unstakeOpen, setUnStakeOpen] = useState(false);
 
-  const unstakeShowModal = (item: { name: any; TVL?: string; AverageAPY?: string; MyAPY?: string; MyStaked?: string; }) => {
+  const unstakeShowModal = (item: {
+    name: any;
+    TVL?: string;
+    AverageAPY?: string;
+    MyAPY?: string;
+    MyStaked?: string;
+  }) => {
     /*
     item:
         AverageAPY
