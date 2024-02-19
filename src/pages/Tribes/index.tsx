@@ -5,7 +5,7 @@ import { Button, Flex, Image, Table, Typography } from 'antd';
 import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAccount, useContractReads } from 'wagmi';
+import { useAccount, useContractRead, useContractReads } from 'wagmi';
 
 import idoAbi from '@/abi/IDO.json';
 import PoolFactoryAbi from '@/abi/pool_factory_abi.json';
@@ -13,6 +13,8 @@ import Constants from '@/constants';
 import { useEthersSigner } from '@/web3/ethers';
 
 import indexStyle from './index.module.css';
+import PoolAbi from '@/abi/pool_abi.json';
+import SlotAbi from '@/abi/slot_abi.json';
 
 const { Text } = Typography;
 
@@ -33,20 +35,24 @@ interface DataType {
 const Launchpad = () => {
   const { address: userAddress, isConnected } = useAccount();
   const signer = useEthersSigner();
-  const [loading, setLoading] = useState(false);
+
   const PoolFactoryContract = new ethers.Contract(Constants.Contracts.PoolFactory, PoolFactoryAbi, signer);
 
-  const loadData = async () => {
-    setLoading(true);
-    console.log('userAddress', userAddress);
+  const SlotContract = new ethers.Contract(Constants.Contracts.Slot, SlotAbi, signer);
 
-    try {
-      const data = await PoolFactoryContract.getAllPools();
+  const { data: pools, isLoading: loading } = useContractRead({
+    abi: PoolFactoryAbi,
+    address: Constants.Contracts.PoolFactory,
+    functionName: 'getAllPools',
+  });
+
+  useEffect(() => {
+    if (pools.length > 0) {
       const tableData = [];
 
-      for (let i = 0; i < data?.length; i++) {
+      for (let i = 0; i < pools.length; i++) {
         tableData.push({
-          address: data[i],
+          address: pools[i],
           rank: '#' + i + 1,
           tribe: 'Tribe MFT #' + i + 1,
           blastTVL: '8,712',
@@ -62,19 +68,10 @@ const Launchpad = () => {
       }
 
       setData(tableData);
-      console.log('data', data);
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  useAsyncEffect(async () => {
-    if (signer) {
-      loadData();
+      console.log(pools);
     }
-  }, [signer]);
+  }, [pools]);
   const columns: TableProps<DataType>['columns'] = [
     {
       title: 'Rank',
@@ -200,8 +197,20 @@ const Launchpad = () => {
     navigate('/Tribes/Join');
   };
 
-  const toFarm = (s: any) => {
+  const toFarm = async (s: any) => {
     console.log(s);
+    // if (isConnected){
+    //   const PoolContract = new ethers.Contract(s.address, PoolAbi, signer);
+    //   const data = await PoolContract.poolOwner();
+    //   if (data.toLowerCase()===userAddress?.toLowerCase()){
+    //     const isHaveSlot = await SlotContract.isUserHasSlot(data, userAddress);
+    //     if (!isHaveSlot){
+    //       navigate('/Tribes/Join');
+    //     }
+    //   }
+    // }
+
+
     navigate('/Farming?address=' + s.address);
   };
 

@@ -1,11 +1,12 @@
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { Button, Flex, Image, Input, message, Modal, Typography } from 'antd';
 import { ethers } from 'ethers';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 
 import PoolAbi from '@/abi/pool_abi.json';
+import SlotAbi from '@/abi/slot_abi.json';
 import arrowExplorer from '@/assets/img/arrowExplorer2.svg';
 import farmingAvatarA from '@/assets/img/farmingAvatarA.png';
 import farmingAvatarB from '@/assets/img/farmingAvatarB.png';
@@ -18,17 +19,17 @@ const { Text } = Typography;
 
 const Earn = () => {
   const navigate = useNavigate();
-  const searchParams = new URLSearchParams(window.location.search);
+  const [searchParams] = useSearchParams();
   const { openConnectModal } = useConnectModal();
   const { address: userAddress, isConnected } = useAccount();
   const signer = useEthersSigner();
 
-  let PoolContract: any = null;
+  const SlotContract = new ethers.Contract(Constants.Contracts.Slot, SlotAbi, signer);
 
-  if (searchParams.get('address')) {
-    // @ts-ignore
-    PoolContract = new ethers.Contract(searchParams.get('address'), PoolAbi, signer);
-  }
+  // 弹窗 Buy
+  const [buyLoading, setBuyLoading] = useState(false);
+  const [buyOpen, setBuyOpen] = useState(false);
+
 
   // 分页按钮
   const [pagin, setPagin] = useState(0);
@@ -81,6 +82,7 @@ const Earn = () => {
     MyAPY: '375%',
     MyStaked: '10 ETH',
   });
+  const [isHaveSlot, setIsHaveSlot] = useState(false);
 
   const [stakeLoading, setStakeLoading] = useState(false);
   const [stakeOpen, setStakeOpen] = useState(false);
@@ -111,7 +113,7 @@ const Earn = () => {
     try {
       if (isConnected) {
         setStakeLoading(true);
-        const txn = await PoolContract.stake(BigInt(stakeData.Amount));
+        const txn = await SlotContract.stake(BigInt(stakeData.Amount), { gasLimit: 1000000 });
 
         await txn.wait();
         console.log('tx set', txn.hash);
@@ -138,6 +140,46 @@ const Earn = () => {
     stakeData.Amount = e.target.value;
     setStakeData(stakeData);
     //setStakeAmountInput(e.target.value);
+    //e.target.value
+  };
+
+  const buyShowModal = () => {
+    setBuyOpen(true);
+  };
+
+  const handleBuyOk = async () => {
+    try {
+      if (isConnected) {
+        setBuyLoading(true);
+        // @ts-ignore
+        const PoolContract = new ethers.Contract(searchParams.get('address'), PoolAbi, signer);
+
+        const data = await PoolContract.poolOwner();
+        const txn = await SlotContract.buySlots(data, BigInt(buyAmount), { gasLimit: 1000000 });
+
+        await txn.wait();
+        console.log('tx set', txn.hash);
+        message.success('Successful operation!');
+        setBuyOpen(false);
+        setBuyLoading(false);
+      } else {
+        openConnectModal?.();
+      }
+    } catch (e: any) {
+      console.log('claim error', e);
+      message.error(e.toString());
+      setBuyLoading(false);
+    }
+  };
+
+  const handleBuyCancel = () => {
+    setBuyOpen(false);
+  };
+
+  const [buyAmount, setBuyAmountInput] = useState('');
+
+  const handleBuyChange = (e: any) => {
+    setBuyAmountInput(e.target.value);
     //e.target.value
   };
 
@@ -181,7 +223,7 @@ const Earn = () => {
     try {
       if (isConnected) {
         setUnStakeLoading(true);
-        const txn = await PoolContract.unstake(BigInt(unstakeData.Amount));
+        const txn = await SlotContract.unstake(BigInt(unstakeData.Amount), { gasLimit: 1000000 });
 
         await txn.wait();
         console.log('tx set', txn.hash);
@@ -193,7 +235,7 @@ const Earn = () => {
       }
     } catch (e: any) {
       console.log('claim error', e);
-      message.error(e.toString());
+      message.error( e.reason);
       setUnStakeLoading(false);
     }
   };
@@ -214,6 +256,23 @@ const Earn = () => {
     //setStakeAmountInput(e.target.value);
     //e.target.value
   };
+
+  const loadData = async () => {
+    // @ts-ignore
+    const PoolContract = new ethers.Contract(searchParams.get('address'), PoolAbi, signer);
+
+    const data = await PoolContract.poolOwner();
+    const isHaveSlot = await SlotContract.isUserHasSlot(data, userAddress);
+
+    console.log('isHaveSlot', isHaveSlot);
+    setIsHaveSlot(true);
+  };
+
+  useEffect(() => {
+    if (signer) {
+      loadData();
+    }
+  }, [signer]);
 
   return (
     <>
@@ -267,7 +326,7 @@ const Earn = () => {
                 Farming
               </Button>
               <Button
-                onClick={() => navigate('/Room')}
+                onClick={() => navigate('/Room?address='+searchParams.get('address'))}
                 className={`${'font1p25'} ${pagin == 1 ? 'FarmingPaginBtn' : 'FarmingPaginDisableBtn'}`}
               >
                 ROOM
@@ -458,29 +517,38 @@ const Earn = () => {
             </Flex>
           </Flex>
           <Flex style={{ width: '100%', padding: '0.5rem' }} vertical justify={'flex-start'} align={'center'}>
+            { isHaveSlot && (
+              <Button
+                onClick={() => navigate('/Room')}
+                className="confirmBtn font1p1"
+                style={{ width: '100%', marginBottom: '0.5rem', textTransform: 'uppercase' }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="21" viewBox="0 0 28 21" fill="none">
+                  <path
+                    d="M3.60648 10.7075L4.07176 10.1957L3.60648 9.68384L0.76087 6.55367V1.52174H27.2391V19.4783H0.76087V13.8376L3.60648 10.7075Z"
+                    stroke="white"
+                    stroke-width="1.52174"
+                  />
+                  <path
+                    d="M18.7185 7.23747L18.261 6.28192L17.8035 7.23747L17.0437 8.82446L15.2995 9.0567L14.2494 9.19654L15.0168 9.92694L16.2913 11.14L15.9732 12.8705L15.7817 13.9125L16.7135 13.4084L18.261 12.5711L19.8085 13.4084L20.7403 13.9125L20.5488 12.8705L20.2307 11.14L21.5052 9.92694L22.2726 9.19654L21.2225 9.0567L19.4784 8.82446L18.7185 7.23747Z"
+                    stroke="white"
+                    stroke-width="1.01449"
+                  />
+                  <path d="M8.52197 1.36957V6.23913" stroke="white" stroke-width="1.52174" />
+                  <path d="M8.52197 15.3696V20.2391" stroke="white" stroke-width="1.52174" />
+                  <path d="M8.52197 8.06522V12.9348" stroke="white" stroke-width="1.52174" />
+                </svg>
+                Enter the room
+              </Button>
+            )
+            }
+            { !isHaveSlot && (
             <Button
-              onClick={() => navigate('/Room')}
-              className="confirmBtn font1p1"
-              style={{ width: '100%', marginBottom: '0.5rem', textTransform: 'uppercase' }}
+              className="colorCBtn font1p1 colorBlack"
+              loading={buyLoading}
+              onClick={buyShowModal}
+              style={{ width: '100%', marginLeft: 0 }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="21" viewBox="0 0 28 21" fill="none">
-                <path
-                  d="M3.60648 10.7075L4.07176 10.1957L3.60648 9.68384L0.76087 6.55367V1.52174H27.2391V19.4783H0.76087V13.8376L3.60648 10.7075Z"
-                  stroke="white"
-                  stroke-width="1.52174"
-                />
-                <path
-                  d="M18.7185 7.23747L18.261 6.28192L17.8035 7.23747L17.0437 8.82446L15.2995 9.0567L14.2494 9.19654L15.0168 9.92694L16.2913 11.14L15.9732 12.8705L15.7817 13.9125L16.7135 13.4084L18.261 12.5711L19.8085 13.4084L20.7403 13.9125L20.5488 12.8705L20.2307 11.14L21.5052 9.92694L22.2726 9.19654L21.2225 9.0567L19.4784 8.82446L18.7185 7.23747Z"
-                  stroke="white"
-                  stroke-width="1.01449"
-                />
-                <path d="M8.52197 1.36957V6.23913" stroke="white" stroke-width="1.52174" />
-                <path d="M8.52197 15.3696V20.2391" stroke="white" stroke-width="1.52174" />
-                <path d="M8.52197 8.06522V12.9348" stroke="white" stroke-width="1.52174" />
-              </svg>
-              Enter the room
-            </Button>
-            <Button className="colorCBtn font1p1 colorBlack" style={{ width: '100%', marginLeft: 0 }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21" fill="none">
                 <path
                   d="M14.8999 9.20833L17.9999 6.10831L14.8999 3.00833"
@@ -512,12 +580,143 @@ const Earn = () => {
                 />
               </svg>
               Buy
-            </Button>
+            </Button>)}
           </Flex>
         </Flex>
       </Flex>
 
       <Modal
+        open={buyOpen}
+        title={sidebar.name}
+        maskClosable={!buyLoading}
+        onOk={handleBuyOk}
+        onCancel={handleBuyCancel}
+        closeIcon={false}
+        footer={false}
+      >
+        <Flex
+          className={`${indexStyle.sidebarBox}`}
+          style={{ width: '100%', height: 'auto', minHeight: 'auto', margin: 0 }}
+          vertical
+          justify={'flex-start'}
+          align={'flex-start'}
+        >
+          <Flex className="mr0p32" style={{ width: '100%', padding: '0.75rem 0' }} justify={'center'} align={'center'}>
+            {sidebar.avatar ? (
+              <Image height={'8.6875rem'} width={'8.6875rem'} src={sidebar.avatar} preview={false} />
+            ) : (
+              <div className={`${indexStyle.noneAvatar}`}></div>
+            )}
+          </Flex>
+          <Flex
+            style={{ width: '100%', padding: '0.75rem 1rem' }}
+            vertical={false}
+            justify={'space-between'}
+            align={'flex-start'}
+          >
+            <Flex style={{ width: '50%' }} vertical justify={'flex-start'} align={'flex-start'}>
+              <Text className="font font0p87 colorBlack" style={{ fontFamily: 'Space Mono' }}>
+                {sidebar.overview1[0].title}
+              </Text>
+              <Text className="font font2 colorBlack" style={{ fontFamily: 'Space Grotesk' }}>
+                {sidebar.overview1[0].val}
+              </Text>
+            </Flex>
+            <Flex style={{ width: '50%' }} vertical justify={'flex-start'} align={'flex-start'}>
+              <Text className="font font0p87 colorBlack" style={{ fontFamily: 'Space Mono' }}>
+                {sidebar.overview1[1].title}
+              </Text>
+              <Text
+                className={`${'font font2'} ${
+                  sidebar.overview1[1].val.includes('+')
+                    ? 'colorG'
+                    : sidebar.overview1[1].val.includes('-')
+                      ? 'colorR'
+                      : 'colorBlack'
+                }`}
+                style={{ fontFamily: 'Space Grotesk' }}
+              >
+                {sidebar.overview1[1].val}
+              </Text>
+            </Flex>
+          </Flex>
+          <Flex
+            style={{ width: '100%', padding: '0.75rem 0' }}
+            vertical={false}
+            justify={'space-between'}
+            align={'flex-start'}
+          >
+            <Flex style={{ width: '50%', padding: '0 1rem' }} vertical={false} justify={'flex-start'} align={'center'}>
+              <Text className="font font0p87 colorBlack" style={{ fontFamily: 'Space Mono' }}>
+                {sidebar.overview2[0].title}
+              </Text>
+              <Text className="font font0p87 colorBlack" style={{ fontFamily: 'Space Mono' }}>
+                {sidebar.overview2[0].val}
+              </Text>
+            </Flex>
+            <Flex style={{ width: '50%', padding: '0 1rem' }} vertical={false} justify={'flex-start'} align={'center'}>
+              <Text className="font font0p87 colorBlack" style={{ fontFamily: 'Space Mono' }}>
+                {sidebar.overview2[1].title}
+              </Text>
+              <Text className="font font0p87 colorBlack" style={{ fontFamily: 'Space Mono' }}>
+                {sidebar.overview2[1].val}
+              </Text>
+            </Flex>
+          </Flex>
+          <Flex
+            style={{ width: '100%', padding: '0.5rem 1rem', borderBottom: '1px solid #EFEFEF' }}
+            vertical
+            justify={'flex-start'}
+            align={'flex-start'}
+          >
+            <Text className="font font0p87 colorBlack mb0p5" style={{ fontFamily: 'Space Mono' }}>
+              Amount
+            </Text>
+            <Flex
+              style={{ width: '100%', padding: '0.3rem 0.75rem', border: '1px solid #8A8A8A' }}
+              vertical={false}
+              justify={'space-bwteen'}
+              align={'center'}
+            >
+              <Input id="chatInput" className="noneInput" placeholder="" onInput={handleBuyChange} />
+              <Text
+                className="font font0p87 colorBlack ml0p5"
+                style={{ fontFamily: 'Space Mono', whiteSpace: 'nowrap' }}
+              >
+                Slots
+              </Text>
+            </Flex>
+          </Flex>
+          <Flex style={{ width: '100%', padding: '0.5rem' }} vertical justify={'flex-start'} align={'center'}>
+            <Flex
+              style={{
+                width: '100%',
+                display: 'grid',
+                gridTemplateColumns: 'calc(50% - 0.5rem / 2) calc(50% - 0.5rem / 2)',
+                gap: '0.5rem',
+              }}
+              vertical={false}
+              justify={'space-between'}
+              align={'center'}
+            >
+              <Button
+                disabled={buyLoading}
+                onClick={handleBuyCancel}
+                className="confirmSubBtn font1p1"
+                style={{ width: '100%', marginLeft: 0 }}
+              >
+                DISCARD
+              </Button>
+              <Button className="confirmBtn font1p1 colorW" loading={buyLoading} onClick={handleBuyOk} style={{ width: '100%', marginLeft: 0 }}>
+                Buy
+              </Button>
+            </Flex>
+          </Flex>
+        </Flex>
+      </Modal>
+
+      <Modal
+        maskClosable={!stakeLoading}
         open={stakeOpen}
         title={<Text className="font1">{stakeData.title}</Text>}
         onOk={handleStakeOk}
@@ -611,6 +810,7 @@ const Earn = () => {
               align={'center'}
             >
               <Button
+                disabled={stakeLoading}
                 onClick={handleStakeCancel}
                 className="confirmSubBtn font1p1"
                 style={{ width: '100%', marginLeft: 0 }}
@@ -620,7 +820,7 @@ const Earn = () => {
               <Button
                 onClick={handleStakeOk}
                 loading={stakeLoading}
-                className="confirmBtn font1p1 colorW"
+                className={"confirmBtn font1p1 colorW"}
                 style={{ width: '100%', marginLeft: 0 }}
               >
                 STAKE
@@ -631,6 +831,7 @@ const Earn = () => {
       </Modal>
 
       <Modal
+        maskClosable={!unstakeLoading}
         open={unstakeOpen}
         title={<Text className="font1">{unstakeData.title}</Text>}
         onOk={handleUnStakeOk}
@@ -724,6 +925,7 @@ const Earn = () => {
               align={'center'}
             >
               <Button
+                disabled={unstakeLoading}
                 onClick={handleUnStakeCancel}
                 className="confirmSubBtn font1p1"
                 style={{ width: '100%', marginLeft: 0 }}

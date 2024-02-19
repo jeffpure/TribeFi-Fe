@@ -21,6 +21,7 @@ import Constants from '@/constants';
 import { useEthersSigner } from '@/web3/ethers';
 
 import indexStyle from './index.module.css';
+import SlotAbi from '@/abi/slot_abi.json';
 
 const { Text } = Typography;
 
@@ -38,6 +39,7 @@ const CreateTribe = () => {
   const { openConnectModal } = useConnectModal();
   const { address: userAddress, isConnected } = useAccount();
   const signer = useEthersSigner();
+  const SlotContract = new ethers.Contract(Constants.Contracts.Slot, SlotAbi, signer);
 
   const PoolFactoryContract = new ethers.Contract(Constants.Contracts.PoolFactory, PoolFactoryAbi, signer);
 
@@ -151,7 +153,7 @@ const CreateTribe = () => {
     try {
       if (isConnected) {
         setBtnLoading(true);
-        const txn = await PoolFactoryContract.addPool(
+        const txn1 = await PoolFactoryContract.addPool(
           name,
           curNFT.addr,
           '0xDc826f32923523B2Be6C8E333Dd99f7b1f900e19',
@@ -159,8 +161,15 @@ const CreateTribe = () => {
           Constants.Contracts.Slot,
         );
 
-        await txn.wait();
-        console.log('tx set', txn.hash);
+        await txn1.wait();
+        console.log('tx1 set', txn1.hash);
+        const isHaveSlot = await SlotContract.isUserHasSlot(userAddress, userAddress);
+        if (!isHaveSlot){
+          const txn2 = await SlotContract.buySlots(userAddress, BigInt(1), { gasLimit: 1000000 });
+          await txn2.wait();
+          console.log('tx2 set', txn2.hash);
+        }
+
         message.success('Created successfully');
         setTimeout(() => {
           setBtnLoading(false);
@@ -285,15 +294,15 @@ const CreateTribe = () => {
                 justify={'center'}
                 align={'center'}
               >
-                <div
-                  className="mr0p5"
-                  style={{
-                    position: 'absolute',
-                    left: '0.5rem',
-                  }}
-                >
-                  <Image width={'1.5rem'} src={curNFT.icon} preview={false} />
-                </div>
+                {/*<div*/}
+                {/*  className="mr0p5"*/}
+                {/*  style={{*/}
+                {/*    position: 'absolute',*/}
+                {/*    left: '0.5rem',*/}
+                {/*  }}*/}
+                {/*>*/}
+                {/*  <Image width={'1.5rem'} src={curNFT.icon} preview={false} />*/}
+                {/*</div>*/}
                 <Select
                   className={`${'font1 colorMain createTeibeSelect'} ${indexStyle.SelectBox}`}
                   defaultValue={bindNFT[0].label}

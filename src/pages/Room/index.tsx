@@ -2,7 +2,7 @@ import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { Button, Flex, Image, Input, message, Modal, Typography } from 'antd';
 import { ethers } from 'ethers';
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 
 import PoolAbi from '@/abi/pool_abi.json';
@@ -24,7 +24,7 @@ const { Text } = Typography;
 const Earn = () => {
   const navigate = useNavigate();
 
-  const searchParams = new URLSearchParams(window.location.search);
+  const [searchParams] = useSearchParams();
   const { openConnectModal } = useConnectModal();
   const { address: userAddress, isConnected } = useAccount();
   const signer = useEthersSigner();
@@ -289,7 +289,7 @@ const Earn = () => {
     try {
       if (isConnected) {
         setBuyLoading(true);
-        const txn = await SlotContract.buySlots(BigInt(buyAmount));
+        const txn = await SlotContract.buySlots(BigInt(buyAmount), { gasLimit: 1000000 });
 
         await txn.wait();
         console.log('tx set', txn.hash);
@@ -354,7 +354,7 @@ const Earn = () => {
     try {
       if (isConnected) {
         setSellLoading(true);
-        const txn = await SlotContract.sellSlots(BigInt(buyAmount));
+        const txn = await SlotContract.sellSlots(BigInt(buyAmount), { gasLimit: 1000000 });
 
         await txn.wait();
         console.log('tx set', txn.hash);
@@ -420,7 +420,7 @@ const Earn = () => {
               </Flex>
               <Flex vertical={false} justify={'flex-start'} align={'flex-start'}>
                 <Button
-                  onClick={() => navigate('/Farming')}
+                  onClick={() => navigate('/Farming?address='+searchParams.get('address'))}
                   className={`${'font1p25'} ${pagin == 0 ? 'FarmingPaginBtn' : 'FarmingPaginDisableBtn'}`}
                 >
                   Farming
@@ -698,6 +698,7 @@ const Earn = () => {
       </Flex>
 
       <Modal
+        maskClosable={false}
         open={buyOpen}
         title={sidebar.name}
         onOk={handleBuyOk}
@@ -826,7 +827,7 @@ const Earn = () => {
       </Modal>
 
       {/* Deposit for Yield */}
-      <Modal open={open} title={sidebar.name} onOk={handleOk} onCancel={handleCancel} closeIcon={false} footer={false}>
+      <Modal open={open} maskClosable={false} title={sidebar.name} onOk={handleOk} onCancel={handleCancel} closeIcon={false} footer={false}>
         <Flex
           className={`${indexStyle.sidebarBox}`}
           style={{ width: '100%', height: 'auto', minHeight: 'auto', margin: 0 }}
@@ -930,6 +931,7 @@ const Earn = () => {
       </Modal>
       {/* SELL */}
       <Modal
+        maskClosable={false}
         open={sellOpen}
         title={sidebar.name}
         onOk={handleSellOk}
