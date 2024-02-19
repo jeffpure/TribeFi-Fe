@@ -4,6 +4,7 @@ import { useWalletClient, type WalletClient } from 'wagmi';
 
 export function walletClientToSigner(walletClient: WalletClient) {
   const { account, chain, transport } = walletClient;
+
   console.log('chain info', chain);
   const network = {
     chainId: chain.id,
@@ -11,6 +12,7 @@ export function walletClientToSigner(walletClient: WalletClient) {
     ensAddress: chain.contracts?.ensRegistry?.address,
   };
   const provider = new providers.Web3Provider(transport, network);
+
   return provider.getSigner(account.address);
 }
 

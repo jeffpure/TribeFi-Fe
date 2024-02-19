@@ -226,6 +226,19 @@ const Earn = () => {
     },
   ]);
 
+  // 弹窗 stake
+  const [stakeData, setStakeData] = useState({
+    title: '',
+    Amount: 0,
+    type: 'ETH',
+    Balance: '12.523 ETH',
+    MyAPY: '375%',
+    MyStaked: '10 ETH',
+  });
+
+  const [stakeLoading, setStakeLoading] = useState(false);
+  const [stakeOpen, setStakeOpen] = useState(false);
+
   // 聊天输入
   const [chatInput, setChatInput] = useState('');
 
@@ -321,9 +334,6 @@ const Earn = () => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const showModal = () => {
-    setOpen(true);
-  };
 
   const handleOk = () => {
     setLoading(true);
@@ -337,10 +347,62 @@ const Earn = () => {
     setOpen(false);
   };
 
-  const handleCloseAndOpen = () => {
-    setOpen(false);
-    setBuyOpen(true);
+  const stakeShowModal = (item: {
+    name: any;
+    TVL?: string;
+    AverageAPY?: string;
+    MyAPY?: string;
+    MyStaked?: string;
+  }) => {
+    /*
+    item:
+        AverageAPY
+        MyAPY
+        MyStaked
+        TVL
+        name
+    */
+    stakeData.title = item.name;
+    // setStakeData 这里更新弹窗数据
+
+    setStakeData(stakeData);
+    setStakeOpen(true);
   };
+
+  const handleStakeOk = async () => {
+    try {
+      if (isConnected) {
+        setStakeLoading(true);
+        const txn = await SlotContract.stake(BigInt(stakeData.Amount), { gasLimit: 1000000 });
+
+        await txn.wait();
+        console.log('tx set', txn.hash);
+        message.success('Successful operation!');
+        setStakeLoading(false);
+        setStakeOpen(false);
+      } else {
+        openConnectModal?.();
+      }
+    } catch (e: any) {
+      console.log('claim error', e);
+      message.error(e.toString());
+      setStakeLoading(false);
+    }
+  };
+
+  const handleStakeCancel = () => {
+    setStakeOpen(false);
+  };
+
+  //const [stakeAmount, setStakeAmountInput] = useState('');
+
+  const handleStakeAmountChange = (e: any) => {
+    stakeData.Amount = e.target.value;
+    setStakeData(stakeData);
+    //setStakeAmountInput(e.target.value);
+    //e.target.value
+  };
+
 
   // 弹窗 SELL
   const [sellLoading, setSellLoading] = useState(false);
@@ -579,7 +641,7 @@ const Earn = () => {
           </Flex>
           <Flex style={{ width: '100%', padding: '0.5rem' }} vertical justify={'flex-start'} align={'center'}>
             <Button
-              onClick={showModal}
+              onClick={() => stakeShowModal({ name: 'xxx' })}
               className="confirmBtn font1p1"
               style={{ width: '100%', marginBottom: '0.5rem', textTransform: 'uppercase' }}
             >
@@ -1035,6 +1097,121 @@ const Earn = () => {
                 style={{ width: '100%', marginLeft: 0 }}
               >
                 SELL
+              </Button>
+            </Flex>
+          </Flex>
+        </Flex>
+      </Modal>
+
+      <Modal
+        maskClosable={!stakeLoading}
+        open={stakeOpen}
+        title={<Text className="font1">{stakeData.title}</Text>}
+        onOk={handleStakeOk}
+        onCancel={handleStakeCancel}
+        closeIcon={false}
+        footer={false}
+      >
+        <Flex
+          className={`${indexStyle.sidebarBox}`}
+          style={{ width: '100%', height: 'auto', minHeight: 'auto', margin: 0 }}
+          vertical
+          justify={'flex-start'}
+          align={'flex-start'}
+        >
+          <Flex style={{ width: '100%', padding: '0 1rem' }} vertical justify={'flex-start'} align={'flex-start'}>
+            <Text className="font font0p87 colorBlack mb0p5" style={{ fontFamily: 'Space Mono' }}>
+              Stake amount
+            </Text>
+            <Flex
+              style={{ width: '100%', padding: '0.3rem 0.75rem', border: '1px solid #8A8A8A' }}
+              vertical={false}
+              justify={'space-bwteen'}
+              align={'center'}
+            >
+              <Input id="chatInput" className="noneInput" placeholder="" onInput={handleStakeAmountChange} />
+              <Text
+                className="font font0p87 colorBlack ml0p5"
+                style={{ fontFamily: 'Space Mono', whiteSpace: 'nowrap' }}
+              >
+                {stakeData.type}
+              </Text>
+            </Flex>
+            <Flex style={{ width: '100%' }} vertical={false} justify={'space-between'} align={'center'}>
+              <Text className="font font0p75 colorGrey82" style={{ fontFamily: 'Space Mono', lineHeight: '1.25rem' }}>
+                Balance
+              </Text>
+              <Text className="font font0p75 colorGrey82" style={{ fontFamily: 'Space Mono', lineHeight: '1.25rem' }}>
+                {stakeData.Balance}
+              </Text>
+            </Flex>
+          </Flex>
+          <Flex style={{ width: '100%', padding: '0 1rem' }} vertical justify={'space-between'} align={'flex-start'}>
+            <Flex
+              style={{ width: '100%', padding: '0.5rem 0rem' }}
+              vertical={false}
+              justify={'space-between'}
+              align={'center'}
+            >
+              <Text className="font font0p87 colorBlack" style={{ fontFamily: 'Space Mono', fontWeight: '400' }}>
+                My APY
+              </Text>
+              <Text
+                className={`${'font font0p87'} ${
+                  stakeData.MyAPY.includes('-') ? 'colorR' : stakeData.MyAPY == '0%' ? 'colorBlack' : 'colorG'
+                }`}
+                style={{ fontFamily: 'Space Grotesk' }}
+              >
+                {stakeData.MyAPY}
+              </Text>
+            </Flex>
+            <Flex
+              style={{ width: '100%', padding: '0.5rem 0rem' }}
+              vertical={false}
+              justify={'space-between'}
+              align={'center'}
+            >
+              <Text className="font font0p87 colorBlack" style={{ fontFamily: 'Space Mono', fontWeight: '400' }}>
+                My Staked
+              </Text>
+              <Text className="font font0p87 colorBlack" style={{ fontFamily: 'Space Grotesk' }}>
+                {stakeData.MyStaked}
+              </Text>
+            </Flex>
+          </Flex>
+
+          <Flex
+            style={{ width: '100%', padding: '0.5rem', borderTop: '1px solid #EFEFEF' }}
+            vertical
+            justify={'flex-start'}
+            align={'center'}
+          >
+            <Flex
+              style={{
+                width: '100%',
+                display: 'grid',
+                gridTemplateColumns: 'calc(50% - 0.5rem / 2) calc(50% - 0.5rem / 2)',
+                gap: '0.5rem',
+              }}
+              vertical={false}
+              justify={'space-between'}
+              align={'center'}
+            >
+              <Button
+                disabled={stakeLoading}
+                onClick={handleStakeCancel}
+                className="confirmSubBtn font1p1"
+                style={{ width: '100%', marginLeft: 0 }}
+              >
+                DISCARD
+              </Button>
+              <Button
+                onClick={handleStakeOk}
+                loading={stakeLoading}
+                className={"confirmBtn font1p1 colorW"}
+                style={{ width: '100%', marginLeft: 0 }}
+              >
+                STAKE
               </Button>
             </Flex>
           </Flex>

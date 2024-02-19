@@ -25,12 +25,12 @@ export const blast = {
   },
   blockExplorers: {
     etherscan: {
-      name: 'Etherscan',
-      url: 'https://goerli.etherscan.io',
+      name: 'Blastscan',
+      url: 'https://testnet.blastscan.io',
     },
     default: {
-      name: 'Etherscan',
-      url: 'https://goerli.etherscan.io',
+      name: 'Blastscan',
+      url: 'https://testnet.blastscan.io',
     },
   },
   testnet: true,

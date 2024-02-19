@@ -96,6 +96,7 @@ export const MyActionButton = ({
       )}
       <Modal
         title=""
+        maskClosable={false}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}

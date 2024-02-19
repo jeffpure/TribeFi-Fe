@@ -65,7 +65,7 @@ const MyHeader: FC = () => {
             zIndex: '999',
           }}
         >
-          More features are being developed for the Demo version. Please anticipate it.
+          More features are under developed for the Demo version. Stay tuned
         </Text>
 
         <div className={`${indexStyle.headerContaine}`} style={{ width: '100%' }}>

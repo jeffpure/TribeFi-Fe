@@ -53,8 +53,8 @@ const Launchpad = () => {
       for (let i = 0; i < pools.length; i++) {
         tableData.push({
           address: pools[i],
-          rank: '#' + i + 1,
-          tribe: 'Tribe MFT #' + i + 1,
+          rank: '#' + (i + 1),
+          tribe: 'Tribe MFT #' + (i + 1),
           blastTVL: '8,712',
           tribeTVL: '2,302',
           apyGeneralEth: '126%',
