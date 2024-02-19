@@ -209,7 +209,7 @@ const Launchpad = () => {
     //     }
     //   }
     // }
-
+    localStorage.setItem('tribeAddr', s.address);
 
     navigate('/Farming?address=' + s.address);
   };

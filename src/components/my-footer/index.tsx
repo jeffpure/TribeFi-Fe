@@ -6,9 +6,9 @@ import { Footer } from 'antd/es/layout/layout';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import docIcon from '@/assets/img/docIcon.svg';
 import logo from '@/assets/logo/logo.svg';
 import { TwitterLogo } from '@/components/Icons';
-import docIcon from '@/assets/img/docIcon.svg';
 
 const { Text } = Typography;
 
@@ -46,10 +46,21 @@ function MyFooter(): JSX.Element {
               { url: '/Farming', name: 'Farming' },
               { url: '/Room', name: 'Room' },
               { url: '/Markets', name: 'Markets' },
-            ].map(({ name, url }) => (
-              <Link style={{ flexShrink: 0 }} to={url} target="_self" className="footerNavItem">
+            ].map((item: any) => (
+              <Link
+                style={{ flexShrink: 0 }}
+                to={
+                  item.name === 'Farming' || item.name === '/Room'
+                    ? localStorage.getItem('tribeAddr')
+                      ? item.url + '?address=' + localStorage.getItem('tribeAddr')
+                      : '/Tribes/Join'
+                    : item.url
+                }
+                target="_self"
+                className="footerNavItem"
+              >
                 <Text className="font0p87 colorBlack" style={{ fontFamily: 'Space Mono', fontWeight: '400' }}>
-                  {name}
+                  {item.name}
                 </Text>
               </Link>
             ))}

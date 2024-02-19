@@ -97,7 +97,13 @@ const MyHeader: FC = () => {
                   return (
                     <Link
                       key={idx}
-                      to={item.url}
+                      to={
+                        item.name === 'Farming' || item.name === 'Room'
+                          ? localStorage.getItem('tribeAddr')
+                            ? item.url + '?address=' + localStorage.getItem('tribeAddr')
+                            : '/Tribes/Join'
+                          : item.url
+                      }
                       target={item.target ? '_blank' : '_self'}
                       className={`${indexStyle.navBtn} ${href.includes(item.url) ? indexStyle.activeNavBtn : ''}`}
                     >
@@ -180,7 +186,13 @@ const MyHeader: FC = () => {
                 return (
                   <Link
                     key={idx}
-                    to={item.url}
+                    to={
+                      item.name === 'Farming' || item.name === 'Room'
+                        ? localStorage.getItem('tribeAddr')
+                          ? item.url + '?address=' + localStorage.getItem('tribeAddr')
+                          : '/Tribes/Join'
+                        : item.url
+                    }
                     onClick={() => {
                       setIsOpenMenu(false);
                       document.body.style.overflow = 'auto';
