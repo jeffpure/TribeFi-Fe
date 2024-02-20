@@ -3,15 +3,15 @@ import type { TableProps } from 'antd';
 import { Button, Flex, Table, Typography } from 'antd';
 import { ethers } from 'ethers';
 import React, { useEffect, useState } from 'react';
-import {  useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAccount, useContractRead } from 'wagmi';
 
 import PoolFactoryAbi from '@/abi/pool_factory_abi.json';
+import SlotAbi from '@/abi/slot_abi.json';
 import Constants from '@/constants';
 import { useEthersSigner } from '@/web3/ethers';
 
 import indexStyle from './index.module.css';
-import SlotAbi from '@/abi/slot_abi.json';
 
 const { Text } = Typography;
 
@@ -37,14 +37,14 @@ const Launchpad = () => {
 
   const SlotContract = new ethers.Contract(Constants.Contracts.Slot, SlotAbi, signer);
 
-  const { data: pools, isLoading: loading } = useContractRead({
+  const { data: pools, isLoading: loading }: any = useContractRead({
     abi: PoolFactoryAbi,
-    address: Constants.Contracts.PoolFactory,
+    address: Constants.Contracts.PoolFactory as `0x${string}`,
     functionName: 'getAllPools',
   });
 
   useEffect(() => {
-    if (pools&&pools.length > 0) {
+    if (pools && pools.length > 0) {
       const tableData = [];
 
       for (let i = 0; i < pools.length; i++) {

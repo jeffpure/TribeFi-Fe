@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAccount, useContractRead } from 'wagmi';
 
 import PoolAbi from '@/abi/pool_abi.json';
+import PoolFactoryAbi from '@/abi/pool_factory_abi.json';
 import SlotAbi from '@/abi/slot_abi.json';
 import arrowExplorer from '@/assets/img/arrowExplorer2.svg';
 import farmingAvatarA from '@/assets/img/farmingAvatarA.png';
@@ -14,7 +15,6 @@ import Constants from '@/constants';
 import { useEthersSigner } from '@/web3/ethers';
 
 import indexStyle from './index.module.css';
-import PoolFactoryAbi from '@/abi/pool_factory_abi.json';
 
 const { Text } = Typography;
 
@@ -29,17 +29,19 @@ const Earn = () => {
 
   const { data: poolOwner, isLoading: poolOwnerLoading } = useContractRead({
     abi: PoolAbi,
-    address: searchParams.get('address'),
+    address: searchParams.get('address') as `0x${string}`,
     functionName: 'poolOwner',
+    enabled: !!searchParams.get('address'),
   });
 
-  console.log('poolOwner', poolOwner)
+  console.log('poolOwner', poolOwner);
 
   const { data: slotsSupply, isLoading: slotsSupplyLoading } = useContractRead({
     abi: SlotAbi,
-    address: Constants.Contracts.Slot,
+    address: Constants.Contracts.Slot as `0x${string}`,
     functionName: 'slotsSupply',
-    args:[poolOwner]
+    args: [poolOwner],
+    enabled: !!poolOwner,
   });
 
   console.log('slotsSupply', slotsSupply);
@@ -47,7 +49,6 @@ const Earn = () => {
   // 弹窗 Buy
   const [buyLoading, setBuyLoading] = useState(false);
   const [buyOpen, setBuyOpen] = useState(false);
-
 
   // 分页按钮
   const [pagin, setPagin] = useState(0);
@@ -253,7 +254,7 @@ const Earn = () => {
       }
     } catch (e: any) {
       console.log('claim error', e);
-      message.error( e.reason);
+      message.error(e.reason);
       setUnStakeLoading(false);
     }
   };
@@ -344,7 +345,7 @@ const Earn = () => {
                 Farming
               </Button>
               <Button
-                onClick={() => navigate('/Room?address='+searchParams.get('address'))}
+                onClick={() => navigate('/Room?address=' + searchParams.get('address'))}
                 className={`${'font1p25'} ${pagin == 1 ? 'FarmingPaginBtn' : 'FarmingPaginDisableBtn'}`}
               >
                 ROOM
@@ -535,7 +536,7 @@ const Earn = () => {
             </Flex>
           </Flex>
           <Flex style={{ width: '100%', padding: '0.5rem' }} vertical justify={'flex-start'} align={'center'}>
-            { isHaveSlot && (
+            {isHaveSlot && (
               <Button
                 onClick={() => navigate('/Room')}
                 className="confirmBtn font1p1"
@@ -558,47 +559,47 @@ const Earn = () => {
                 </svg>
                 Enter the room
               </Button>
-            )
-            }
-            { !isHaveSlot && (
-            <Button
-              className="colorCBtn font1p1 colorBlack"
-              loading={buyLoading}
-              onClick={buyShowModal}
-              style={{ width: '100%', marginLeft: 0 }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21" fill="none">
-                <path
-                  d="M14.8999 9.20833L17.9999 6.10831L14.8999 3.00833"
-                  stroke="black"
-                  stroke-width="1.25"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M3 6.10831H18"
-                  stroke="black"
-                  stroke-width="1.25"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M6.09998 11.7916L3 14.8917L6.09998 17.9917"
-                  stroke="black"
-                  stroke-width="1.25"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M18 14.8917H3"
-                  stroke="black"
-                  stroke-width="1.25"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-              Buy
-            </Button>)}
+            )}
+            {!isHaveSlot && (
+              <Button
+                className="colorCBtn font1p1 colorBlack"
+                loading={buyLoading}
+                onClick={buyShowModal}
+                style={{ width: '100%', marginLeft: 0 }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21" fill="none">
+                  <path
+                    d="M14.8999 9.20833L17.9999 6.10831L14.8999 3.00833"
+                    stroke="black"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M3 6.10831H18"
+                    stroke="black"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M6.09998 11.7916L3 14.8917L6.09998 17.9917"
+                    stroke="black"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M18 14.8917H3"
+                    stroke="black"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                Buy
+              </Button>
+            )}
           </Flex>
         </Flex>
       </Flex>
@@ -649,8 +650,8 @@ const Earn = () => {
                   sidebar.overview1[1].val.includes('+')
                     ? 'colorG'
                     : sidebar.overview1[1].val.includes('-')
-                      ? 'colorR'
-                      : 'colorBlack'
+                    ? 'colorR'
+                    : 'colorBlack'
                 }`}
                 style={{ fontFamily: 'Space Grotesk' }}
               >
@@ -725,7 +726,12 @@ const Earn = () => {
               >
                 DISCARD
               </Button>
-              <Button className="confirmBtn font1p1 colorW" loading={buyLoading} onClick={handleBuyOk} style={{ width: '100%', marginLeft: 0 }}>
+              <Button
+                className="confirmBtn font1p1 colorW"
+                loading={buyLoading}
+                onClick={handleBuyOk}
+                style={{ width: '100%', marginLeft: 0 }}
+              >
                 Buy
               </Button>
             </Flex>
@@ -838,7 +844,7 @@ const Earn = () => {
               <Button
                 onClick={handleStakeOk}
                 loading={stakeLoading}
-                className={"confirmBtn font1p1 colorW"}
+                className={'confirmBtn font1p1 colorW'}
                 style={{ width: '100%', marginLeft: 0 }}
               >
                 STAKE
