@@ -3,7 +3,7 @@ import { Button, Flex, Image, Input, message, Modal, Typography } from 'antd';
 import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAccount } from 'wagmi';
+import { useAccount, useContractRead } from 'wagmi';
 
 import PoolAbi from '@/abi/pool_abi.json';
 import SlotAbi from '@/abi/slot_abi.json';
@@ -14,6 +14,7 @@ import Constants from '@/constants';
 import { useEthersSigner } from '@/web3/ethers';
 
 import indexStyle from './index.module.css';
+import PoolFactoryAbi from '@/abi/pool_factory_abi.json';
 
 const { Text } = Typography;
 
@@ -25,6 +26,23 @@ const Earn = () => {
   const signer = useEthersSigner();
 
   const SlotContract = new ethers.Contract(Constants.Contracts.Slot, SlotAbi, signer);
+
+  const { data: poolOwner, isLoading: poolOwnerLoading } = useContractRead({
+    abi: PoolAbi,
+    address: searchParams.get('address'),
+    functionName: 'poolOwner',
+  });
+
+  console.log('poolOwner', poolOwner)
+
+  const { data: slotsSupply, isLoading: slotsSupplyLoading } = useContractRead({
+    abi: SlotAbi,
+    address: Constants.Contracts.Slot,
+    functionName: 'slotsSupply',
+    args:[poolOwner]
+  });
+
+  console.log('slotsSupply', slotsSupply);
 
   // 弹窗 Buy
   const [buyLoading, setBuyLoading] = useState(false);
