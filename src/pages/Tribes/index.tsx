@@ -3,17 +3,15 @@ import type { TableProps } from 'antd';
 import { useAsyncEffect } from 'ahooks';
 import { Button, Flex, Image, Table, Typography } from 'antd';
 import { ethers } from 'ethers';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAccount, useContractRead, useContractReads } from 'wagmi';
 
-import idoAbi from '@/abi/IDO.json';
 import PoolFactoryAbi from '@/abi/pool_factory_abi.json';
 import Constants from '@/constants';
 import { useEthersSigner } from '@/web3/ethers';
 
 import indexStyle from './index.module.css';
-import PoolAbi from '@/abi/pool_abi.json';
 import SlotAbi from '@/abi/slot_abi.json';
 
 const { Text } = Typography;
@@ -47,7 +45,7 @@ const Launchpad = () => {
   });
 
   useEffect(() => {
-    if (pools.length > 0) {
+    if (pools&&pools.length > 0) {
       const tableData = [];
 
       for (let i = 0; i < pools.length; i++) {
