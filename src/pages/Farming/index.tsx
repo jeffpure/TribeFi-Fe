@@ -1,5 +1,5 @@
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { Button, Flex, Image, Input, message, Modal, Typography } from 'antd';
+import { Button, Flex, Image, Input, message, Modal, Tooltip, Typography } from 'antd';
 import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -45,6 +45,16 @@ const Earn = () => {
   });
 
   console.log('slotsSupply', slotsSupply);
+
+  const { data: isHaveSlot, isLoading: isHaveSlotLoading } = useContractRead({
+    abi: SlotAbi,
+    address: Constants.Contracts.Slot as `0x${string}`,
+    functionName: 'isUserHasSlot',
+    args: [poolOwner],
+    enabled: !!poolOwner,
+  });
+
+
 
   // 弹窗 Buy
   const [buyLoading, setBuyLoading] = useState(false);
@@ -101,7 +111,6 @@ const Earn = () => {
     MyAPY: '375%',
     MyStaked: '10 ETH',
   });
-  const [isHaveSlot, setIsHaveSlot] = useState(false);
 
   const [stakeLoading, setStakeLoading] = useState(false);
   const [stakeOpen, setStakeOpen] = useState(false);
@@ -276,20 +285,11 @@ const Earn = () => {
     //e.target.value
   };
 
-  const loadData = async () => {
-    // @ts-ignore
-    const PoolContract = new ethers.Contract(searchParams.get('address'), PoolAbi, signer);
 
-    const data = await PoolContract.poolOwner();
-    const isHaveSlot = await SlotContract.isUserHasSlot(data, userAddress);
-
-    console.log('isHaveSlot', isHaveSlot);
-    setIsHaveSlot(true);
-  };
 
   useEffect(() => {
     if (signer) {
-      loadData();
+
     }
   }, [signer]);
 
@@ -344,12 +344,14 @@ const Earn = () => {
               <Button className={`${'font1p25'} ${pagin == 0 ? 'FarmingPaginBtn' : 'FarmingPaginDisableBtn'}`}>
                 Farming
               </Button>
-              <Button
-                onClick={() => navigate('/Room?address=' + searchParams.get('address'))}
-                className={`${'font1p25'} ${pagin == 1 ? 'FarmingPaginBtn' : 'FarmingPaginDisableBtn'}`}
-              >
-                ROOM
-              </Button>
+                <Tooltip title={isHaveSlot? 'Click to enter the room to chat':'You don’t have a slot, please buy it first!'}color={isHaveSlot ?'blue':''}>
+                  <Button
+                    onClick={() => {isHaveSlot? navigate('/Room?address=' + searchParams.get('address')): buyShowModal()}}
+                    className={`${'font1p25'} ${pagin == 1 ? 'FarmingPaginBtn' : 'FarmingPaginDisableBtn'}`}
+                  >
+                    ROOM
+                  </Button>
+              </Tooltip>
             </Flex>
           </Flex>
           <Flex

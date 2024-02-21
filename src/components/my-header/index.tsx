@@ -88,9 +88,10 @@ const MyHeader: FC = () => {
             <div className={`${indexStyle.headerMain}`}>
               <Flex className={`${indexStyle.headerMainList}`} vertical={false} justify={'center'} align={'center'}>
                 {[
+                  { url: '/Create', name: 'Create' },
                   { url: '/Tribes', target: false, name: 'Join a tribe' },
                   { url: '/Farming', target: false, name: 'Farming' },
-                  { url: '/Room', target: false, name: 'Room' },
+                  // { url: '/Room', target: false, name: 'Room' },
                   { url: '/Markets', target: false, name: 'Markets' },
                   { url: 'https://blur.io/', target: true, name: 'Tribe NFT' },
                 ].map((item, idx) => {
@@ -98,7 +99,7 @@ const MyHeader: FC = () => {
                     <Link
                       key={idx}
                       to={
-                        item.name === 'Farming' || item.name === 'Room'
+                        item.name === 'Farming'
                           ? localStorage.getItem('tribeAddr')
                             ? item.url + '?address=' + localStorage.getItem('tribeAddr')
                             : '/Tribes/Join'
@@ -177,9 +178,10 @@ const MyHeader: FC = () => {
           <div className={`${indexStyle.headerMainOpen}`}>
             <Flex className={`${indexStyle.headerMainListOpen}`} justify={'center'}>
               {[
+                { url: '/Create', name: 'Create' },
                 { url: '/Tribes', name: 'Join a tribe' },
                 { url: '/Farming', name: 'Farming' },
-                { url: '/Room', name: 'Room' },
+                // { url: '/Room', name: 'Room' },
                 { url: '/Markets', name: 'Markets' },
                 { url: 'https://blur.io/', name: 'Tribe NFT' },
               ].map((item, idx) => {
@@ -187,7 +189,7 @@ const MyHeader: FC = () => {
                   <Link
                     key={idx}
                     to={
-                      item.name === 'Farming' || item.name === 'Room'
+                      item.name === 'Farming'
                         ? localStorage.getItem('tribeAddr')
                           ? item.url + '?address=' + localStorage.getItem('tribeAddr')
                           : '/Tribes/Join'

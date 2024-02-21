@@ -42,15 +42,16 @@ function MyFooter(): JSX.Element {
           </Flex>
           <Flex className="footerNav" vertical={false} justify={'center'} align={'center'}>
             {[
-              { url: '/Tribes', name: 'Tribes' },
+              { url: '/Create', name: 'Create' },
+              { url: '/Tribes', name: 'Join a tribe' },
               { url: '/Farming', name: 'Farming' },
-              { url: '/Room', name: 'Room' },
+              // { url: '/Room', name: 'Room' },
               { url: '/Markets', name: 'Markets' },
             ].map((item: any) => (
               <Link
                 style={{ flexShrink: 0 }}
                 to={
-                  item.name === 'Farming' || item.name === '/Room'
+                  item.name === 'Farming'
                     ? localStorage.getItem('tribeAddr')
                       ? item.url + '?address=' + localStorage.getItem('tribeAddr')
                       : '/Tribes/Join'
