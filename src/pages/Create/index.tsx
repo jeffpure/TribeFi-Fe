@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 
 import PoolFactoryAbi from '@/abi/pool_factory_abi.json';
+import SlotAbi from '@/abi/slot_abi.json';
 import ETHIcon from '@/assets/img/ethCoinB.svg';
 import tribeCoin from '@/assets/img/tribeCoin.svg';
 import upImgIcon from '@/assets/img/upImgIcon.svg';
@@ -21,7 +22,6 @@ import Constants from '@/constants';
 import { useEthersSigner } from '@/web3/ethers';
 
 import indexStyle from './index.module.css';
-import SlotAbi from '@/abi/slot_abi.json';
 
 const { Text } = Typography;
 
@@ -154,6 +154,7 @@ const CreateTribe = () => {
       if (isConnected) {
         setBtnLoading(true);
         const txn1 = await PoolFactoryContract.addPool(
+          curNFT.addr,
           name,
           curNFT.addr,
           '0xDc826f32923523B2Be6C8E333Dd99f7b1f900e19',
@@ -164,8 +165,10 @@ const CreateTribe = () => {
         await txn1.wait();
         console.log('tx1 set', txn1.hash);
         const isHaveSlot = await SlotContract.isUserHasSlot(userAddress, userAddress);
-        if (!isHaveSlot){
+
+        if (!isHaveSlot) {
           const txn2 = await SlotContract.buySlots(userAddress, BigInt(1), { gasLimit: 1000000 });
+
           await txn2.wait();
           console.log('tx2 set', txn2.hash);
         }

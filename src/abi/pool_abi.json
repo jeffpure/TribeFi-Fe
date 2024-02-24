@@ -8,6 +8,16 @@
 			},
 			{
 				"internalType": "address",
+				"name": "_nft",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_poolName",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
 				"name": "_stakeTokenAddr",
 				"type": "address"
 			},
@@ -86,6 +96,46 @@
 	},
 	{
 		"inputs": [],
+		"name": "getPoolInfo",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "nft",
+						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "poolName",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "slotsNum",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "membersNum",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct Pool.PoolInfo",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "getShare",
 		"outputs": [
 			{
@@ -112,12 +162,38 @@
 	},
 	{
 		"inputs": [],
+		"name": "nftAddr",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "owner",
 		"outputs": [
 			{
 				"internalType": "address",
 				"name": "",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "poolName",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
 			}
 		],
 		"stateMutability": "view",

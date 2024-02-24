@@ -29,12 +29,7 @@ const Earn = () => {
   const { address: userAddress, isConnected } = useAccount();
   const signer = useEthersSigner();
 
-  let PoolContract: any = null;
-
-  if (searchParams.get('address')) {
-    // @ts-ignore
-    PoolContract = new ethers.Contract(searchParams.get('address'), PoolAbi, signer);
-  }
+  const PoolContract  = new ethers.Contract(searchParams.get('address') as `0x${string}`, PoolAbi, signer);;
 
   const SlotContract = new ethers.Contract(Constants.Contracts.PoolFactory, SlotAbi, signer);
 
